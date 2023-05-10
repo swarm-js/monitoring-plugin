@@ -9,7 +9,7 @@ let startDate: number
 let swarm: any
 let conf: MonitorPluginOptions
 
-export default class MonitorPlugin {
+export class MonitorPlugin {
   static setup (instance: any, options: Partial<MonitorPluginOptions> = {}) {
     swarm = instance
     startDate = +new Date()

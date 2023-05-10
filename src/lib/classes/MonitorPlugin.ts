@@ -15,6 +15,7 @@ export default class MonitorPlugin {
     startDate = +new Date()
 
     conf = {
+      controllerName: 'MonitoringPlugin',
       prefix: '/__monitoring__',
       access: null,
       ...options
@@ -32,54 +33,41 @@ export default class MonitorPlugin {
         state.endDate - state.startDate
       )
     })
-    instance.controllers.addController('MonitoringPlugin', {
+    instance.controllers.addController(conf.controllerName, {
       prefix: conf.prefix,
       title: 'Monitoring',
       description:
         'Provides analytics on this API usage, like volume, durations, etc',
       root: true
     })
-    instance.controllers.addMethod('MonitoringPlugin', MonitorPlugin.getStats, {
-      method: 'GET',
-      route: '/stats/:filter',
-      title: 'Retrieve analytics',
-      parameters: [
-        {
-          name: 'filter',
-          schema: { type: 'string' },
-          description:
-            'Method name as in controller@method. Use "all" to retrieve global statistics.'
-        }
-      ],
-      returns: [
-        {
-          code: 200,
-          description: 'Analytics',
-          mimeType: 'application/json',
-          schema: {
-            type: 'object',
-            properties: {
-              uptime: {
-                type: 'number',
-                description: 'Number of milliseconds since last reboot'
-              },
-              global: {
-                type: 'object',
-                properties: {
-                  calls: { type: 'number' },
-                  duration: {
-                    type: 'object',
-                    properties: {
-                      avg: { type: 'number' },
-                      min: { type: 'number' },
-                      max: { type: 'number' }
-                    }
-                  }
-                }
-              },
-              perDay: {
-                type: 'object',
-                additionalProperties: {
+    instance.controllers.addMethod(
+      conf.controllerName,
+      MonitorPlugin.getStats,
+      {
+        method: 'GET',
+        route: '/stats/:filter',
+        title: 'Retrieve analytics',
+        parameters: [
+          {
+            name: 'filter',
+            schema: { type: 'string' },
+            description:
+              'Method name as in controller@method. Use "all" to retrieve global statistics.'
+          }
+        ],
+        returns: [
+          {
+            code: 200,
+            description: 'Analytics',
+            mimeType: 'application/json',
+            schema: {
+              type: 'object',
+              properties: {
+                uptime: {
+                  type: 'number',
+                  description: 'Number of milliseconds since last reboot'
+                },
+                global: {
                   type: 'object',
                   properties: {
                     calls: { type: 'number' },
@@ -92,13 +80,30 @@ export default class MonitorPlugin {
                       }
                     }
                   }
+                },
+                perDay: {
+                  type: 'object',
+                  additionalProperties: {
+                    type: 'object',
+                    properties: {
+                      calls: { type: 'number' },
+                      duration: {
+                        type: 'object',
+                        properties: {
+                          avg: { type: 'number' },
+                          min: { type: 'number' },
+                          max: { type: 'number' }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      ]
-    })
+        ]
+      }
+    )
   }
 
   static getData () {
